@@ -114,35 +114,36 @@ export default function App() {
 
   const onSpinEnd = () => {
     if (winningNumber === null) return;
-
+  
     let winnings = 0;
     for (const [spotId, chips] of Object.entries(chipsOnBoard)) {
       const won = isWinningForSpot(spotId, winningNumber);
       if (!won) continue;
-
+  
       const payoutMult = PAYOUTS[spotId] ?? PAYOUTS.STRAIGHT;
       for (const chip of chips) {
         winnings += chip.value * payoutMult;
       }
     }
-
+  
     let message = "";
     if (winnings > 0) {
       setBalance((b) => b + winnings);
-      message = `${winningNumber} ${colorName(
-        winningNumber
-      )} WINNER +${winnings}`;
+      message = `${winningNumber} ${colorName(winningNumber)} WINNER +${winnings}`;
     } else {
-      message = `${winningNumber} ${colorName(
-        winningNumber
-      )} LOST -${totalBet}`;
+      message = `${winningNumber} ${colorName(winningNumber)} LOST -${totalBet}`;
     }
-
+  
+    // ✅ IMPORTANT: these 2 lines make round 2+ behave correctly
+    setChipsOnBoard({});         // clear chips so next round requires new bets
+    setWinningNumber(null);      // optional: reset shown number
+  
     setResultMessage(message);
     setTimeout(() => setResultMessage(null), 4000);
-
+  
     setSpinning(false);
   };
+  
 
   const readyNext = () => {
     setChipsOnBoard({});
